@@ -98,9 +98,9 @@ hyperlink==19.0.0 \
     --hash=sha256:4288e34705da077fada1111a24a0aa08bb1e76699c9ce49876af722441845654 \
     --hash=sha256:ab4a308feb039b04f855a020a6eda3b18ca5a68e6d8f8c899cbe9e653721d04f \
     # via twisted
-idna==2.8 \
-    --hash=sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407 \
-    --hash=sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c \
+idna==3.7 \
+    --hash=sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc \
+    --hash=sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0 \
     # via hyperlink, requests, twisted
 incremental==17.5.0 \
     --hash=sha256:717e12246dddf231a349175f48d74d93e2897244939173b01974ab6661406b9f \
