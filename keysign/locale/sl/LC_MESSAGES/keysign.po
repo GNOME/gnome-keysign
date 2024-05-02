@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-keysign master\n"
 "Report-Msgid-Bugs-To: tobiasmue@gnome.org\n"
-"POT-Creation-Date: 2023-02-05 13:50+0000\n"
-"PO-Revision-Date: 2024-04-07 17:29+0200\n"
+"POT-Creation-Date: 2023-10-23 06:17+0000\n"
+"PO-Revision-Date: 2024-05-02 16:43+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -34,7 +34,6 @@ msgstr ""
 "    "
 
 #: data/org.gnome.Keysign.raw.appdata.xml:21
-#, fuzzy
 msgid ""
 "\n"
 "      It can scan another key's barcode and transfer the key securely,\n"
@@ -46,10 +45,9 @@ msgid ""
 msgstr ""
 "\n"
 "Lahko optično prebere črtno kodo drugega ključa in varno prenese ključ,\n"
-"      Omogočanje priložnostnih sej podpisovanja ključev z dvema stranema.\n"
+"      kar omogoča priložnostne seje podpisovanja ključev z dvema stranema.\n"
 "      Sledi najboljšim praksam pošiljanja šifriranih podpisov\n"
-"      na UID-je ključa z e-poštnim odjemalcem, ki ga je uporabnik "
-"konfiguriral\n"
+"      na UID-je ključa z e-poštnim odjemalcem, ki ga je uporabnik nastavil\n"
 "      za uporabo.\n"
 "    "
 
@@ -266,9 +264,8 @@ msgid "Expires: "
 msgstr "Poteče: "
 
 #: keysign/receive.py:158
-#, fuzzy
 msgid "Sign Key"
-msgstr "Podpis ključa"
+msgstr "Podpiši ključ"
 
 #: keysign/receive.py:225
 msgid "Select file for saving"
@@ -290,12 +287,11 @@ msgstr ""
 "NoServers/1\">dokumentacijo</a>."
 
 #: keysign/receive.ui:108
-#, fuzzy
 msgid ""
 "<small>To sign someone's key, scan their QR or enter security code</small>"
 msgstr ""
-"<small>Če želite podpisati ključ neke osebe, optično preberite njen QR ali "
-"vnesite varnostno kodo</small>"
+"<small>Če želite podpisati ključ neke osebe, optično preberite njihovo kodo "
+"QR ali vnesite varnostno kodo</small>"
 
 #: keysign/receive.ui:127
 msgid "<b>Camera</b>"
@@ -314,9 +310,8 @@ msgid "Scan Barcode"
 msgstr "Preberi črtno kodo"
 
 #: keysign/receive.ui:229
-#, fuzzy
 msgid "Downloading key-data. Please wait..."
-msgstr "Prenos ključnih podatkov. Počakajte, prosim ..."
+msgstr "Prenašanje podatkov ključa. Počakajte ..."
 
 #: keysign/receive.ui:254
 msgid "Key download was interrupted!"
@@ -337,17 +332,15 @@ msgstr ""
 "Poskusite znova s klikom gumba »potrdi«."
 
 #: keysign/receive.ui:427
-#, fuzzy
 msgid ""
 "Saves the produced certifications as separate files in a custom directory"
-msgstr "Proizvedena potrdila shrani kot ločene datoteke v imenik po meri"
+msgstr "Proizvedena potrdila shrani kot ločene datoteke v mapo po meri"
 
 #: keysign/receive.ui:442
-#, fuzzy
 msgid ""
 "Imports a temporary version of the produced certifications into the local "
 "keyring"
-msgstr "Uvoz začasne različice izdelanih certifikatov v lokalni obroč ključev"
+msgstr "Uvozi začasne različice izdelanih potrdil v krajevno zbirko ključev"
 
 #: keysign/receive.ui:487
 #, fuzzy
@@ -371,7 +364,7 @@ msgstr "Ključ"
 #: keysign/receive.ui:574 keysign/send.ui:534
 #, fuzzy
 msgid "UIDs"
-msgstr "Vključuje vrednosti UID računov, za katera se ne izpisujejo obvestila."
+msgstr "UID-ji"
 
 #: keysign/receive.ui:652
 #, fuzzy
@@ -416,30 +409,26 @@ msgstr ""
 "%s"
 
 #: keysign/send.ui:7
-#, fuzzy
 msgid "Select and send key"
-msgstr "Izberite in pošljite ključ"
+msgstr "Izberi in pošlji ključ"
 
 #: keysign/send.ui:59
-#, fuzzy
 msgid ""
 "You don't have any keys!\n"
 "Please use, e.g. Seahorse to create one."
 msgstr ""
-"Nimate ključev!\n"
+"Nimate nobenega ključa!\n"
 "Prosimo, uporabite npr. Seahorse, da ga ustvarite."
 
 #: keysign/send.ui:135
-#, fuzzy
 msgid "Very slow or no Internet connection!"
-msgstr "Zelo počasna ali brez internetne povezave!"
+msgstr "Zelo počasi ali brez internetne povezave!"
 
 #: keysign/send.ui:204 keysign/send.ui:751
 msgid "The signature has been successfully imported!"
 msgstr "Podpis je bil uspešno uvožen!"
 
 #: keysign/send.ui:230 keysign/send.ui:777
-#, fuzzy
 msgid ""
 "Returns the received certification back to the sender, so that the sender "
 "can make use of your OpenPGP certificate"
@@ -471,7 +460,6 @@ msgid "Keylist"
 msgstr "Seznam ključev"
 
 #: keysign/send.ui:466
-#, fuzzy
 msgid ""
 "<small>To have the key signed, the other person must enter the security "
 "code, or scan the QR code</small>"
@@ -503,7 +491,6 @@ msgstr ""
 "vašo povezavo."
 
 #: keysign/send.ui:915
-#, fuzzy
 msgid ""
 "Key successfully sent.\n"
 "You should receive an email with the signature soon.\n"
@@ -518,9 +505,8 @@ msgid "An unexpected error occurred."
 msgstr "Prišlo je do nepričakovane napake."
 
 #: keysign/send.ui:961
-#, fuzzy
 msgid "Select and Send key"
-msgstr "Izbira in pošiljanje ključa"
+msgstr "Izbiranje in pošiljanje ključa"
 
 #: keysign/send.ui:1001
 msgid "Also use the Internet to transfer the certificate"
@@ -544,6 +530,7 @@ msgid ""
 msgstr ""
 "Pozdravljeni, $uid.\n"
 "\n"
+"\n"
 "Pravkar sem podpisal vaš ključ\n"
 "\n"
 "      $fingerprint\n"
@@ -551,7 +538,7 @@ msgstr ""
 "Hvala, ker ste mi dovolili, da podpišem vaš ključ!\n"
 "\n"
 "--\n"
-"GNOME Keysign\n"
+"Keysign GNOME\n"
 
 #: keysign/wormholereceive.py:86
 msgid "Wrong message authentication code"
