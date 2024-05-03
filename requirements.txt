@@ -169,9 +169,9 @@ spake2==0.8 \
     --hash=sha256:c17a614b29ee4126206e22181f70a406c618d3c6c62ca6d6779bce95e9c926f4 \
     --hash=sha256:ce80705f8516c54364931f3b2c9a917ba001500d7f2fc76a0e8cf3bcaf0e30f7 \
     # via magic-wormhole
-tqdm==4.42.1 \
-    --hash=sha256:251ee8440dbda126b8dfa8a7c028eb3f13704898caaef7caa699b35e119301e2 \
-    --hash=sha256:fe231261cfcbc6f4a99165455f8f6b9ef4e1032a6e29bccf168b4bf42012f09c \
+tqdm==4.66.3 \
+    --hash=sha256:23097a41eba115ba99ecae40d06444c15d1c0c698d527a01c6c8bd1c5d0647e5 \
+    --hash=sha256:4f41d54107ff9a223dca80b53efe4fb654c67efaba7f47bada3ee9d50e05bd53 \
     # via magic-wormhole
 twisted[tls]==19.10.0 \
     --hash=sha256:0f39698c2aac318032ed4fe95e28ee2bd7d72327c2f6927139811ad403770885 \
