@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: gnome-keysign master\n"
 "Report-Msgid-Bugs-To: tobiasmue@gnome.org\n"
 "POT-Creation-Date: 2023-10-23 06:17+0000\n"
-"PO-Revision-Date: 2024-05-02 16:43+0200\n"
+"PO-Revision-Date: 2024-05-03 18:27+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -53,9 +53,8 @@ msgstr ""
 
 #. Name
 #: data/org.gnome.Keysign.raw.desktop:2
-#, fuzzy
 msgid "Keysign"
-msgstr "Ključni znak"
+msgstr "Keysign"
 
 #. Comment
 #: data/org.gnome.Keysign.raw.desktop:3
@@ -73,7 +72,6 @@ msgstr "python;gpg;gnupg;ključ;openpgp;"
 
 #. Icon
 #: data/org.gnome.Keysign.raw.desktop:7
-#, fuzzy
 msgid "org.gnome.Keysign"
 msgstr "org.gnome.Keysign"
 
@@ -90,14 +88,12 @@ msgid "Internet"
 msgstr "Splet"
 
 #: keysign/avahioffer.py:83 keysign/bluetoothoffer.py:126
-#, fuzzy
 msgid "Offering key: {}"
-msgstr "Ključ ponudbe: {}"
+msgstr "Ponujeni ključ: {}"
 
 #: keysign/avahioffer.py:84 keysign/bluetoothoffer.py:127
-#, fuzzy
 msgid "Discovery info: {}"
-msgstr "Informacije o odkrivanju: {}"
+msgstr "Razkrite informacije: {}"
 
 #: keysign/avahioffer.py:86
 msgid "Press Enter to stop"
@@ -172,7 +168,6 @@ msgid "<big><b>A programming error has been detected.</b></big>"
 msgstr "<big><b>Zaznana je bila programska napaka.</b></big>"
 
 #: keysign/gtkexcepthook.py:178
-#, fuzzy
 msgid ""
 "You may be able to ignore this error and carry on working, but you may get "
 "unexpected results.\n"
@@ -186,7 +181,6 @@ msgstr ""
 "O tem obvestite razvijalce s sledilnikom težav, če tega še nihče ni prijavil."
 
 #: keysign/gtkexcepthook.py:187
-#, fuzzy
 msgid "Search Tracker..."
 msgstr "Sledilnik iskanja ..."
 
@@ -199,7 +193,6 @@ msgid "Ignore Error"
 msgstr "Prezri napako"
 
 #: keysign/gtkexcepthook.py:192
-#, fuzzy
 msgid "Quit GNOME Keysign"
 msgstr "Zapri Keysign GNOME"
 
@@ -215,7 +208,6 @@ msgstr "Izjema pri analizi izjeme."
 #. TRANSLATORS: Please ask users kindly to supply at least an English
 #. TRANSLATORS: title if they are able.
 #: keysign/gtkexcepthook.py:281
-#, fuzzy
 msgid ""
 "            #### Description\n"
 "\n"
@@ -240,23 +232,23 @@ msgid ""
 msgstr ""
 "            #### Opis\n"
 "\n"
-"Dajte temu poročilu kratek opisni naslov.\n"
-"            Uporabite nekaj takega:\n"
-"            \"{funkcija-that-broke}: {what-went-wrong}\"\n"
+"            Dajte temu poročilu kratek opisni naslov\n"
+"            v angleščini. Uporabite nekaj takega:\n"
+"            \"{funkcija-ki-ne-dela}: {kaj-je-slo-narobe}\"\n"
 "            za naslov, če lahko.\n"
 "            Nato zamenjajte to besedilo\n"
-"            z daljšim opisom hrošča.\n"
+"            z daljšim angleškim opisom hrošča.\n"
 "            Tudi posnetki zaslona ali videoposnetki so odlični!\n"
 "\n"
-"#### Koraki za razmnoževanje\n"
+"#### Koraki za ponovitev\n"
 "\n"
-"Prosim, povejte nam, kaj ste počeli\n"
-"            Ko se prikaže sporočilo o napaki.\n"
+"            Prosimo, povejte nam, kaj ste počeli,\n"
+"            ko se je prikazalo sporočilo o napaki.\n"
 "            Če lahko navedete navodila po korakih\n"
 "            o tem, kako reproducirati napako,\n"
-"            To je še bolje.\n"
+"            je to še toliko bolje.\n"
 "\n"
-"#### Traceback\n"
+"#### Sledi napake iz terminala\n"
 "        "
 
 #: keysign/keylistwidget.py:83
@@ -272,7 +264,6 @@ msgid "Select file for saving"
 msgstr "Izberite datoteko za shranjevanje"
 
 #: keysign/receive.ui:56
-#, fuzzy
 msgid ""
 "No GNOME Keysign servers around :-(\n"
 "Find a friend to use GNOME Keysign with.\n"
@@ -280,8 +271,8 @@ msgid ""
 "For more information visit <a href=\"https://wiki.gnome.org/Apps/Keysign/Doc/"
 "NoServers/1\">the documentation</a>."
 msgstr ""
-"Ni strežnikov GNOME Keysign okoli :-(\n"
-"Poiščite prijatelja, s katerim boste lahko uporabljali GNOME Keysign.\n"
+"V okolici ni strežnikov Keysign GNOME :-(\n"
+"Poiščite prijatelja, s katerim boste lahko uporabljali Keysign GNOME.\n"
 "Morda boste imeli tudi težave s povezljivostjo.\n"
 "Za več informacij obiščite <a href=\"https://wiki.gnome.org/Apps/Keysign/Doc/"
 "NoServers/1\">dokumentacijo</a>."
@@ -343,7 +334,6 @@ msgid ""
 msgstr "Uvozi začasne različice izdelanih potrdil v krajevno zbirko ključev"
 
 #: keysign/receive.ui:487
-#, fuzzy
 msgid ""
 "Successfully produced certifications.\n"
 "You can import a temporary signature to start using the key as if it had "
@@ -362,12 +352,10 @@ msgid "Key"
 msgstr "Ključ"
 
 #: keysign/receive.ui:574 keysign/send.ui:534
-#, fuzzy
 msgid "UIDs"
 msgstr "UID-ji"
 
 #: keysign/receive.ui:652
-#, fuzzy
 msgid ""
 "To sign the key, confirm that you want to sign the following key.\n"
 "This will generate an email that must be sent in order to complete the "
@@ -382,18 +370,16 @@ msgid "C_onfirm"
 msgstr "P_otrdi"
 
 #: keysign/receive.ui:798
-#, fuzzy
 msgid "Signing the following UIDs:"
-msgstr "Podpisovanje naslednjih identifikatorjev uporabniškega vmesnika:"
+msgstr "Podpisovanje naslednjih identifikatorjev up. vmesnika (UID):"
 
 #: keysign/send.py:251
-#, fuzzy
 msgid ""
 "Still trying to get a connection to the Internet. It appears to be slow or "
 "unavailable."
 msgstr ""
-"Še vedno poskušate dobiti povezavo z internetom. Zdi se, da je počasen ali "
-"ni na voljo."
+"Še vedno poskušate vzpostaviti povezavo z internetom. Zdi se, da je počasen "
+"ali ni na voljo."
 
 #: keysign/send.py:257
 msgid "There isn't an Internet connection!"
@@ -451,9 +437,8 @@ msgid "<b>Select a key for signing</b>"
 msgstr "<b>Izberite ključ za podpisovanje</b>"
 
 #: keysign/send.ui:379
-#, fuzzy
 msgid "<small>Times signed</small>"
-msgstr "<small>Podpisani časi</small>"
+msgstr "<small>Časi podpisov</small>"
 
 #: keysign/send.ui:446
 msgid "Keylist"
@@ -480,15 +465,14 @@ msgid "<b>QR Code</b>"
 msgstr "<b>Koda QR</b>"
 
 #: keysign/send.ui:897
-#, fuzzy
 msgid ""
 "Could not establish a secure connection.\n"
 "Either your partner has entered a wrong code or someone tried to intercept "
 "your connection."
 msgstr ""
 "Ni bilo mogoče vzpostaviti varne povezave.\n"
-"Ali je vaš partner vnesel napačno kodo ali pa je nekdo poskušal prestreči "
-"vašo povezavo."
+"Vaš partner je vnesel napačno kodo ali pa je nekdo poskušal prestreči vašo "
+"povezavo."
 
 #: keysign/send.ui:915
 msgid ""
@@ -513,7 +497,6 @@ msgid "Also use the Internet to transfer the certificate"
 msgstr "Za prenos potrdila uporabi tudi internet"
 
 #: keysign/util.py:231
-#, fuzzy
 msgid ""
 "Hi $uid,\n"
 "\n"
@@ -528,10 +511,10 @@ msgid ""
 "--\n"
 "GNOME Keysign\n"
 msgstr ""
-"Pozdravljeni, $uid.\n"
+"Pozdravljeni, $uid,\n"
 "\n"
 "\n"
-"Pravkar sem podpisal vaš ključ\n"
+"pravkar sem podpisal vaš ključ\n"
 "\n"
 "      $fingerprint\n"
 "\n"
