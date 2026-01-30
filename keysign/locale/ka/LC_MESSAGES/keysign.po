@@ -1,22 +1,22 @@
 # Georgian translation for gnome-keysign.
-# Copyright (C) 2025 gnome-keysign's COPYRIGHT HOLDER
+# Copyright (C) 2026 gnome-keysign authors.
 # This file is distributed under the same license as the gnome-keysign package.
-# Ekaterine Papava <papava.e@gtu.ge>,  2025.
+# Ekaterine Papava <papava.e@gtu.ge>, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnome-keysign master\n"
-"Report-Msgid-Bugs-To: tobiasmue@gnome.org\n"
-"POT-Creation-Date: 2025-05-10 16:12+0000\n"
-"PO-Revision-Date: 2025-09-17 18:06+0200\n"
+"Project-Id-Version: gnome-keysign 1.3.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-01-30 05:57+0100\n"
+"PO-Revision-Date: 2026-01-30 09:59+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
-"Language-Team: Georgian <ka@li.org>\n"
+"Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
-"X-Generator: Poedit 3.7\n"
+"Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: data/org.gnome.Keysign.raw.appdata.xml:14
 msgid ""
@@ -40,7 +40,7 @@ msgstr ""
 #. Name
 #: data/org.gnome.Keysign.raw.desktop:2
 msgid "Keysign"
-msgstr ""
+msgstr "Keysign"
 
 #. Comment
 #: data/org.gnome.Keysign.raw.desktop:3
@@ -52,12 +52,12 @@ msgstr ""
 #. Keywords
 #: data/org.gnome.Keysign.raw.desktop:4
 msgid "python;gpg;gnupg;key;openpgp;"
-msgstr ""
+msgstr "python;gpg;gnupg;key;openpgp;"
 
 #. Icon
 #: data/org.gnome.Keysign.raw.desktop:7
 msgid "org.gnome.Keysign"
-msgstr ""
+msgstr "org.gnome.Keysign"
 
 #: keysign/app.py:186
 msgid "Send"
@@ -69,55 +69,64 @@ msgstr "მიღება"
 
 #: keysign/app.ui:62 keysign/send.ui:1081
 msgid "Internet"
-msgstr "ინერნეტი"
+msgstr "ინტერნეტი"
 
 #: keysign/avahioffer.py:83 keysign/bluetoothoffer.py:126
+#, python-brace-format
 msgid "Offering key: {}"
 msgstr ""
 
 #: keysign/avahioffer.py:84 keysign/bluetoothoffer.py:127
+#, python-brace-format
 msgid "Discovery info: {}"
-msgstr ""
+msgstr "აღმოჩენის ინფორმაცია: {}"
 
 #: keysign/avahioffer.py:86
 msgid "Press Enter to stop"
-msgstr ""
+msgstr "გასაჩერებლად დააჭირეთ ღილაკს Enter"
 
 #: keysign/bluetoothoffer.py:117
 msgid "You must provide an argument to identify the key"
 msgstr ""
 
 #: keysign/bluetoothoffer.py:128
+#, python-brace-format
 msgid "HMAC: {}"
 msgstr "HMAC: {}"
 
 #: keysign/bluetoothoffer.py:129
+#, python-brace-format
 msgid "Port: {}"
 msgstr "პორტი: {}"
 
 #: keysign/bluetoothoffer.py:132
 msgid "Bluetooth not available"
-msgstr ""
+msgstr "ბლუთუზი ხელმისაწვდომი არაა"
 
 #: keysign/bluetoothoffer.py:137
 msgid "Press Enter to cancel"
-msgstr ""
+msgstr "გასაუქმებლად დააჭირეთ ღილაკს Enter"
 
 #: keysign/bluetoothoffer.py:144
 msgid ""
 "\n"
 "Key successfully sent"
 msgstr ""
+"\n"
+"გასაღები წარმატებით გაიგზავნა"
 
 #: keysign/bluetoothoffer.py:146
+#, python-brace-format
 msgid ""
 "\n"
 "An error occurred: {}"
 msgstr ""
+"\n"
+"აღმოჩენილია შეცდომა: {}"
 
 #: keysign/bluetoothoffer.py:148
 msgid "Press Enter to exit"
-msgstr ""
+msgstr "გასასვლელად დააწექით ღილაკს Enter"
 
 #: keysign/bluetoothreceive.py:135
 msgid "Trying to download the key, please wait"
@@ -125,7 +134,7 @@ msgstr ""
 
 #: keysign/dialog_avahi.ui:8
 msgid "Unable to Start Avahi"
-msgstr ""
+msgstr "Avahi-ის გაშვება შეუძლებელია"
 
 #: keysign/dialog_avahi.ui:9
 msgid ""
@@ -139,13 +148,13 @@ msgstr "დიახ"
 
 #: keysign/gtkexcepthook.py:169
 msgid "Bug Detected"
-msgstr ""
+msgstr "აღმოჩენილია შეცდომა"
 
-#: keysign/gtkexcepthook.py:171
+#: keysign/gtkexcepthook.py:172
 msgid "<big><b>A programming error has been detected.</b></big>"
 msgstr ""
 
-#: keysign/gtkexcepthook.py:174
+#: keysign/gtkexcepthook.py:175
 msgid ""
 "You may be able to ignore this error and carry on working, but you may get "
 "unexpected results.\n"
@@ -164,11 +173,11 @@ msgstr "ანგარიში..."
 
 #: keysign/gtkexcepthook.py:187
 msgid "Ignore Error"
-msgstr ""
+msgstr "შეცდომის იგნორი"
 
 #: keysign/gtkexcepthook.py:188
 msgid "Quit GNOME Keysign"
-msgstr ""
+msgstr "გასვლა GNOME Keysign-დან"
 
 #: keysign/gtkexcepthook.py:198
 msgid "Details..."
@@ -182,6 +191,7 @@ msgstr ""
 #. TRANSLATORS: Please ask users kindly to supply at least an English
 #. TRANSLATORS: title if they are able.
 #: keysign/gtkexcepthook.py:277
+#, python-brace-format
 msgid ""
 "            #### Description\n"
 "\n"
@@ -207,11 +217,11 @@ msgstr ""
 
 #: keysign/keylistwidget.py:82
 msgid "Expires: "
-msgstr ""
+msgstr "ვადა იწურება: "
 
 #: keysign/receive.py:186
 msgid "Sign Key"
-msgstr ""
+msgstr "გასაღების ხელმოწერა"
 
 #: keysign/receive.py:253
 msgid "Select file for saving"
@@ -233,15 +243,15 @@ msgstr ""
 
 #: keysign/receive.ui:127
 msgid "<b>Camera</b>"
-msgstr ""
+msgstr "<b>კამერა</b>"
 
 #: keysign/receive.ui:142
 msgid "Integrated Web Cam"
-msgstr ""
+msgstr "ინტეგრირებული ვებკამერა"
 
 #: keysign/receive.ui:179 keysign/send.ui:687
 msgid "<b>Security Code</b>"
-msgstr ""
+msgstr "<b>უსაფრთხოების კოდი</b>"
 
 #: keysign/receive.ui:212
 msgid "Scan Barcode"
@@ -253,11 +263,11 @@ msgstr ""
 
 #: keysign/receive.ui:254
 msgid "Key download was interrupted!"
-msgstr ""
+msgstr "გასაღების გადმოწერა შეწყდა!"
 
 #: keysign/receive.ui:346
 msgid "Show details about the error"
-msgstr ""
+msgstr "დეტალების ჩვენება შეცდომის შეესახებ"
 
 #: keysign/receive.ui:381
 msgid ""
@@ -292,7 +302,7 @@ msgstr "გასაღები"
 
 #: keysign/receive.ui:574 keysign/send.ui:612
 msgid "UIDs"
-msgstr ""
+msgstr "UID-ები"
 
 #: keysign/receive.ui:652
 msgid ""
@@ -317,7 +327,7 @@ msgstr ""
 
 #: keysign/send.py:298
 msgid "There isn't an Internet connection!"
-msgstr ""
+msgstr "ინტერნეტთან კავშირი არ არსებობს!"
 
 #: keysign/send.py:413
 #, python-format
@@ -325,20 +335,24 @@ msgid ""
 "An unexpected error occurred:\n"
 "%s"
 msgstr ""
+"აღმოჩენილია მოულოდნელი შეცდომა:\n"
+"%s"
 
 #: keysign/send.ui:7
 msgid "Select and send key"
-msgstr ""
+msgstr "გასაღების არჩევა და გაგზავნა"
 
 #: keysign/send.ui:59
 msgid ""
 "You don't have any keys!\n"
 "Please use, e.g. Seahorse to create one."
 msgstr ""
+"გასაღებები არ გაქვთ!\n"
+"შესაქმნელად გამოიყენეთ, მაგ: Seahorse."
 
 #: keysign/send.ui:135
 msgid "Very slow or no Internet connection!"
-msgstr ""
+msgstr "ინტერნეტი ძალიან ნელია, ან არ გაქვთ!"
 
 #: keysign/send.ui:204 keysign/send.ui:829
 msgid "The signature has been successfully imported!"
@@ -374,7 +388,7 @@ msgstr ""
 
 #: keysign/send.ui:524
 msgid "Keylist"
-msgstr ""
+msgstr "გასაღებების სია"
 
 #: keysign/send.ui:544
 msgid ""
@@ -384,7 +398,7 @@ msgstr ""
 
 #: keysign/send.ui:571
 msgid "<b>Key Details</b>"
-msgstr ""
+msgstr "<b>გასაღების დეტალები</b>"
 
 #: keysign/send.ui:596
 msgid "Fingerprint"
@@ -392,7 +406,7 @@ msgstr "თითის ანაბეჭდი"
 
 #: keysign/send.ui:750
 msgid "<b>QR Code</b>"
-msgstr ""
+msgstr "<b>QR კოდი</b>"
 
 #: keysign/send.ui:975
 msgid ""
@@ -414,7 +428,7 @@ msgstr "აღმოჩენილია მოულოდნელი შე�
 
 #: keysign/send.ui:1039
 msgid "Select and Send key"
-msgstr ""
+msgstr "გასაღების არჩევა და გაგზავნა"
 
 #: keysign/send.ui:1079
 msgid "Also use the Internet to transfer the certificate"
@@ -438,4 +452,4 @@ msgstr ""
 
 #: keysign/wormholereceive.py:85
 msgid "Wrong message authentication code"
-msgstr ""
+msgstr "არასწორი შეტყობინების ავთენტიკაციის კოდი"
