@@ -230,9 +230,9 @@ tqdm==4.64.1 \
     --hash=sha256:5f4f682a004951c1b450bc753c710e9280c5746ce6ffedee253ddbcbf54cf1e4 \
     --hash=sha256:6fee160d6ffcd1b1c68c65f14c829c22832bc401726335ce92c52d395944a6a1
     # via magic-wormhole
-twisted[tls]==22.8.0 \
-    --hash=sha256:8d4718d1e48dcc28933f8beb48dc71cfe77a125e37ad1eb7a3d0acc49baf6c99 \
-    --hash=sha256:e5b60de39f2d1da153fbe1874d885fe3fcbdb21fcc446fa759a53e8fc3513bed
+twisted[tls]==26.4.0rc2 \
+    --hash=sha256:41eeb62a7f2688c634f7a1af76e225c58da48f8af1640fcb285ce386a96889e2 \
+    --hash=sha256:d1db6c391a1b6e70028c3212298178621db149a6f75555f6503da557c763406d
     # via
     #   autobahn
     #   gnome-keysign (setup.py)
