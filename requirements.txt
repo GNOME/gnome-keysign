@@ -320,9 +320,9 @@ iterable-io==1.0.1 \
     --hash=sha256:55db222c5914097a8508dc722f8db6112f636a04a8acb94ee6589d9b14bd4bb7 \
     --hash=sha256:da9cc8abcdb536627eb4bb00f2ef37c51ccee3be90752b2aef67b9eb1ef25189
     # via magic-wormhole
-magic-wormhole==0.22.0 \
-    --hash=sha256:52a3ae2f0c56d0d4cd52188e50f10d2fe14bfd46e287dd50b72e7f7e851434ac \
-    --hash=sha256:f5f3f0e99c5a48426801adbbe4267e57e1a5f37349074a4427d25ef8b3987df6
+magic-wormhole==0.24.0 \
+    --hash=sha256:312d7d55cba76fe443fd207b1e006d12b7c56699961ed6dce46bed765945e712 \
+    --hash=sha256:c01b4815878e5fbcad7a22cfa190c529349bf271164189a0ad955a34a8d4cde0
     # via gnome-keysign (setup.py)
 packaging==26.0 \
     --hash=sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4 \
