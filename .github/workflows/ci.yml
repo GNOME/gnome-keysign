@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Clean leftover virtual environment
       run: |
@@ -22,7 +22,7 @@ jobs:
 
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: '3.12'
 
@@ -74,7 +74,7 @@ jobs:
         python setup.py sdist bdist_egg
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: gnome-keysign-release-packages
         path: dist/
@@ -85,7 +85,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Verify _version.py matches git tag
       run: |
@@ -108,10 +108,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: '3.12'
 
@@ -156,6 +156,7 @@ jobs:
         echo "=== wheel contents ===" && python -m zipfile -l dist/*.whl | grep -E '(\.mo|\.desktop|\.appdata)' || echo "WARNING: expected files not found in wheel"
 
     - name: Upload wheel to GitHub release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         files: dist/*
+
