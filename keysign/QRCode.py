@@ -80,7 +80,7 @@ class QRImage(Gtk.DrawingArea):
     def on_gesture_released(self, gesture, n_press, x, y):
         button = gesture.get_current_button()
         if button == 1:
-            FullscreenQRImageWindow(data=self.data, transient_for=self.get_root())
+            FullscreenQRImageWindow(data=self.data)
 
 
     def do_draw(self, cr, widget_width, widget_height):
