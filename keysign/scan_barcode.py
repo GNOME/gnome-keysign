@@ -384,7 +384,6 @@ class ScalingImage(Gtk.DrawingArea):
 #        self.queue_draw()
 
     def do_draw(self, cr, pixbuf=None, widget_width=None, widget_height=None):
-        log.debug('Drawing ScalingImage! %r', self)
         pixbuf = pixbuf or self.pixbuf
         if not pixbuf:
             log.info('No pixbuf to draw! %r', pixbuf)
@@ -405,8 +404,7 @@ class ScalingImage(Gtk.DrawingArea):
             
             # I think we might not need this calculation
             #widget_size = min(widget_width, widget_height)
-            log.info('Allocated size: %s, %s', widget_width, widget_height)
-            
+
             # Fill in background
             cr.save()
             #Gtk.render_background(self.get_style_context(),
