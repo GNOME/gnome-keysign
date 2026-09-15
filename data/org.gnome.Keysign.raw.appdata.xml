@@ -27,6 +27,18 @@ It follows best practises by sending the encrypted signatures to the UIDs of a k
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.9.6" date="2026-09-15" type="stable">
+      <description>
+        <p>
+         * Fix the QR code window not actually going fullscreen on Wayland
+         * Fix the camera selection dropdown not listing or selecting cameras correctly on PipeWire-based desktops
+         * Avoid an IR camera being picked by default or by a name-matching mistake
+         * Fix the barcode scanner not starting inside a Flatpak sandbox after the Camera Portal granted access
+         * Fix a crash that could happen right after a key was sent
+         * Fix a Python 3.13 compatibility issue in a docstring
+        </p>
+      </description>
+    </release>
     <release version="1.2.0" date="2019-10-23" type="stable">
       <description>
         <p>
