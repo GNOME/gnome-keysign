@@ -114,13 +114,14 @@ class KeyFprScanWidget(Gtk.Box):
         self.camera_devices = {}
         
         self._using_portal = False
+        self._portal_requested = False
         if camera_portal._using_flatpak() and camera_portal.is_camera_portal_available():
-            log.info("Running in Flatpak and Camera Portal is available, requesting access")
+            log.info("Running in Flatpak and Camera Portal is available")
             self._using_portal = True
-            # Hide the camera selector dropdown — portal handles camera access
+            # Hidden until the portal says what there is to choose from.
             if self.camera_box:
                 self.camera_box.set_visible(False)
-            camera_portal.request_camera_access(self._on_camera_portal_response)
+            self.connect('map', self._on_map)
         else:
             # Legacy path: enumerate devices with Gst.DeviceMonitor
             if self.camera_selector:
@@ -134,6 +135,30 @@ class KeyFprScanWidget(Gtk.Box):
 
         # Temporary measure...
         self.barcode_scanner = self
+
+    def _on_map(self, *args):
+        if self._portal_requested:
+            return
+        window = self.get_root()
+        if not self._request_camera_access(window):
+            window.connect('notify::is-active', self._on_window_active)
+
+    def _on_window_active(self, window, pspec):
+        if self._request_camera_access(window):
+            window.disconnect_by_func(self._on_window_active)
+
+    def _request_camera_access(self, window):
+        """Ask the portal for camera access, if we can do so right now.
+
+        GNOME Shell shows the dialog only for the focused app and otherwise
+        refuses with a denial that looks exactly like the user saying no.
+        """
+        if self._portal_requested or not window.is_active():
+            return False
+        self._portal_requested = True
+        log.info("Window is focused, requesting Camera Portal access")
+        camera_portal.request_camera_access(self._on_camera_portal_response)
+        return True
 
     def _on_camera_portal_response(self, success, pipewire_fd):
         """Called when the Camera Portal responds to our access request."""
