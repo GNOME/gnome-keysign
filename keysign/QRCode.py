@@ -250,32 +250,28 @@ class FullscreenQRImageWindow(Gtk.Window):
             self.close()
 
 
+def build_window(data, application=None):
+    """Returns a window showing the data as a QR code
+
+    Clicking the QR code opens it in a fullscreen window, so this is
+    also the quickest way to exercise FullscreenQRImageWindow.
+    """
+    w = Gtk.Window(application=application)
+    w.set_default_size(100, 100)
+    w.set_child(QRImage(data))
+    return w
+
+
 def main(data):
-    w = Gtk.Window()
-    w.connect("delete-event", Gtk.main_quit)
-    w.set_default_size(100,100)
-    qr = QRImage(data)
-
-    global fullscreen
-    fullscreen = False
-
-    def on_released(widget, event):
-        global fullscreen
- 
-        if event.button == 1:
-            fullscreen = not fullscreen
-            if fullscreen:
-                w.fullscreen()
-            else:
-                w.unfullscreen()
-        
-    #qr.connect('button-release-event', on_released)
-    #qr.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.BUTTON_PRESS_MASK)
-    w.set_child(qr)
-    w.present()
     app = Gtk.Application()
-    app.connect('activate', lambda app: (w.set_application(app), w.present()))
-    app.run(None)
+
+    def on_activate(app):
+        build_window(data, application=app).present()
+
+    app.connect('activate', on_activate)
+    # Closing the last window quits the application, which is what the
+    # delete-event handler used to do for us.
+    return app.run(None)
 
 if __name__ == '__main__':
     import sys
