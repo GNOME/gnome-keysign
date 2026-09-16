@@ -105,6 +105,15 @@ For more information visit &lt;a href="https://wiki.gnome.org/Apps/Keysign/Doc/N
                   </object>
                 </child>
                 <child>
+                  <object class="GtkLabel" id="camera_unavailable_label">
+                    <property name="label" translatable="1">&lt;small&gt;No camera could be started. You can still enter the security code below.&lt;/small&gt;</property>
+                    <property name="use-markup">1</property>
+                    <property name="wrap">1</property>
+                    <property name="visible">0</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkBox" id="scanner">
                     <property name="vexpand">1</property>
                     <property name="orientation">vertical</property>

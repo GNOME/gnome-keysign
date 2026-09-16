@@ -114,11 +114,14 @@ class KeyFprScanWidget(Gtk.Box):
         if self.camera_selector:
             self.camera_selector.connect("changed", self.on_camera_changed)
         self.camera_box = builder.get_object("box40")
+        self.camera_unavailable_label = builder.get_object(
+            "camera_unavailable_label")
         self.camera_devices = {}
         
         self._using_portal = False
         self._portal_requested = False
         self._pipewire_fd = None
+        self._portal_camera_list = []
         if camera_portal._using_flatpak() and camera_portal.is_camera_portal_available():
             log.info("Running in Flatpak and Camera Portal is available")
             self._using_portal = True
@@ -179,6 +182,7 @@ class KeyFprScanWidget(Gtk.Box):
         """Offer the cameras reachable through the portal's PipeWire fd."""
         self._pipewire_fd = fd
         cameras = self._portal_cameras(fd)
+        self._portal_camera_list = cameras
         if not cameras:
             log.warning("The portal exposed no camera we can name, "
                         "letting PipeWire pick one")
@@ -202,6 +206,9 @@ class KeyFprScanWidget(Gtk.Box):
         provider.start()
         devices = provider.get_devices()
         provider.stop()
+        # A singleton, so an fd left here makes later scans answer with the
+        # portal's cameras, whose v4l2 paths we may not be able to open.
+        provider.set_property('fd', -1)
 
         cameras = []
         seen = set()
@@ -220,15 +227,33 @@ class KeyFprScanWidget(Gtk.Box):
     def _on_stream_stalled(self, reader):
         """Open a device ourselves, the portal's stream having stayed blank.
 
-        The stream negotiates a format, delivers a frame or two and then
-        nothing, so take the camera the ordinary way instead.
+        Gst.DeviceMonitor is no use inside the sandbox, where v4l2 wants
+        udev and PipeWire wants a socket we lack. The portal's listing does
+        carry each camera's v4l2 path, so keep those we can open.
         """
         if not self._using_portal:
             return
         log.warning("Camera Portal stream stalled, falling back to "
                     "direct device access.")
         self._using_portal = False
-        self._fallback_to_device_monitor()
+
+        cameras = [(display_name, path, path)
+                   for display_name, path, _node in self._portal_camera_list
+                   if os.path.exists(path)]
+        if cameras:
+            if self.camera_box:
+                self.camera_box.set_visible(True)
+            self._fill_camera_selector(cameras)
+            return
+
+        log.warning("No camera left to fall back to: the portal's stream "
+                    "stalled and none of its cameras is visible to us as a "
+                    "device. Grant device access or update the host's "
+                    "PipeWire.")
+        if self.camera_box:
+            self.camera_box.set_visible(False)
+        if self.camera_unavailable_label:
+            self.camera_unavailable_label.set_visible(True)
 
     def _select_camera(self, value):
         if self._using_portal:
