@@ -27,7 +27,7 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 
 from gi.repository import Gtk, Gst, GdkPixbuf
-from gi.repository import GObject
+from gi.repository import GLib, GObject
 
 
 if  __name__ == "__main__" and __package__ is None:
@@ -115,6 +115,7 @@ class KeyFprScanWidget(Gtk.Box):
         
         self._using_portal = False
         self._portal_requested = False
+        self._pipewire_fd = None
         if camera_portal._using_flatpak() and camera_portal.is_camera_portal_available():
             log.info("Running in Flatpak and Camera Portal is available")
             self._using_portal = True
@@ -164,14 +165,60 @@ class KeyFprScanWidget(Gtk.Box):
         """Called when the Camera Portal responds to our access request."""
         if success and pipewire_fd is not None:
             log.info("Camera Portal granted access, fd=%d", pipewire_fd)
-            from gi.repository import GLib
-            GLib.idle_add(self.reader.set_pipewire_fd, pipewire_fd)
+            GLib.idle_add(self._setup_portal_cameras, pipewire_fd)
         else:
             log.warning("Camera Portal denied or failed, falling back to "
                         "direct device access.")
             self._using_portal = False
-            from gi.repository import GLib
             GLib.idle_add(self._fallback_to_device_monitor)
+
+    def _setup_portal_cameras(self, fd):
+        """Offer the cameras reachable through the portal's PipeWire fd."""
+        self._pipewire_fd = fd
+        cameras = self._portal_cameras(fd)
+        if not cameras:
+            log.warning("The portal exposed no camera we can name, "
+                        "letting PipeWire pick one")
+            self.reader.set_pipewire_fd(fd)
+            return
+        if self.camera_box:
+            self.camera_box.set_visible(True)
+        self._fill_camera_selector(cameras)
+
+    def _portal_cameras(self, fd):
+        """List the cameras on the portal's PipeWire connection.
+
+        The portal hands out a connection restricted to cameras but does
+        not choose one for us. Capturing without naming a node gets us
+        PipeWire's default, which is ordered by priority.session and is
+        happy to rank an infrared camera first.
+        """
+        factory = Gst.DeviceProviderFactory.find('pipewiredeviceprovider')
+        provider = factory.get()
+        provider.set_property('fd', fd)
+        provider.start()
+        devices = provider.get_devices()
+        provider.stop()
+
+        cameras = []
+        seen = set()
+        for device in devices:
+            props = device.get_properties()
+            node_name = props.get_string('node.name') if props else None
+            # The provider lists every node twice.
+            if not node_name or node_name in seen:
+                continue
+            seen.add(node_name)
+            cameras.append((device.get_display_name(),
+                            props.get_string('api.v4l2.path') or node_name,
+                            node_name))
+        return cameras
+
+    def _select_camera(self, value):
+        if self._using_portal:
+            self.reader.set_pipewire_fd(self._pipewire_fd, value)
+        else:
+            self.reader.set_device(value)
 
     def _fallback_to_device_monitor(self):
         """Fall back to legacy Gst.DeviceMonitor enumeration."""
@@ -181,28 +228,14 @@ class KeyFprScanWidget(Gtk.Box):
             self.populate_cameras()
 
     def populate_cameras(self):
-        self.camera_selector.remove_all()
-        
         monitor = Gst.DeviceMonitor.new()
         monitor.add_filter("Video/Source", None)
         monitor.start()
         devices = monitor.get_devices()
         monitor.stop()
-        
-        self.camera_devices = {}
-        best_suitable_idx = -1
-        best_suitable_v4l2 = -1
-        
-        best_unsuitable_idx = -1
-        best_unsuitable_v4l2 = -1
-        
-        def get_v4l2_index(path):
-            if not path:
-                return -1
-            m = re.search(r'\d+$', path)
-            return int(m.group(0)) if m else -1
-        
-        for idx, device in enumerate(devices):
+
+        cameras = []
+        for device in devices:
             display_name = device.get_display_name()
             props = device.get_properties()
             device_path = None
@@ -226,14 +259,42 @@ class KeyFprScanWidget(Gtk.Box):
 
             if not device_path:
                 continue
-                
+
+            cameras.append((display_name, device_path, device_path))
+
+        self._fill_camera_selector(cameras)
+
+    def _fill_camera_selector(self, cameras):
+        """Fill the dropdown and pre-select the most promising camera.
+
+        Each camera is a (display name, v4l2 path, value) triple, where
+        the value is what identifies it to the reader afterwards: a device
+        path when we open it ourselves, a PipeWire node name when the
+        portal does.
+        """
+        self.camera_selector.remove_all()
+
+        self.camera_devices = {}
+        best_suitable_idx = -1
+        best_suitable_v4l2 = -1
+
+        best_unsuitable_idx = -1
+        best_unsuitable_v4l2 = -1
+
+        def get_v4l2_index(path):
+            if not path:
+                return -1
+            m = re.search(r'\d+$', path)
+            return int(m.group(0)) if m else -1
+
+        for display_name, device_path, value in cameras:
             is_unsuitable = bool(IR_CAMERA_NAME_RE.search(display_name))
-            
+
             v4l2_num = get_v4l2_index(device_path)
             current_idx = len(self.camera_devices)
             item_id = str(current_idx)
-            self.camera_devices[item_id] = device_path
-            
+            self.camera_devices[item_id] = value
+
             if is_unsuitable:
                 label = f"⚠️ {display_name} ({device_path}) [IR / Unsuitable]"
                 if v4l2_num > best_unsuitable_v4l2:
@@ -256,16 +317,16 @@ class KeyFprScanWidget(Gtk.Box):
             else:
                 default_index = 0
             self.camera_selector.set_active(default_index)
-            default_path = self.camera_devices.get(str(default_index))
-            if default_path:
-                self.reader.set_device(default_path)
+            default_value = self.camera_devices.get(str(default_index))
+            if default_value:
+                self._select_camera(default_value)
 
     def on_camera_changed(self, combo):
         active_id = combo.get_active_id()
         if active_id and active_id in self.camera_devices:
-            device_path = self.camera_devices[active_id]
-            log.info("Camera changed in dropdown to ID %s: %s", active_id, device_path)
-            self.reader.set_device(device_path)
+            value = self.camera_devices[active_id]
+            log.info("Camera changed in dropdown to ID %s: %s", active_id, value)
+            self._select_camera(value)
 
     def on_text_changed(self, entryObject, *args):
         self.emit('changed', entryObject, *args)

@@ -55,6 +55,7 @@ class BarcodeReaderGTK(Gtk.Box):
         super(BarcodeReaderGTK, self).__init__(*args, **kwargs)
         self.device = device
         self.pipewire_fd = pipewire_fd
+        self.pipewire_target = None
         # Whether the reader is supposed to be actively capturing, i.e.
         # whether the *next* set_device()/set_pipewire_fd() should restart
         # the pipeline. This is tracked explicitly rather than inferred
@@ -109,6 +110,8 @@ class BarcodeReaderGTK(Gtk.Box):
         self._running = True
         if self.pipewire_fd is not None:
             src = f"pipewiresrc fd={self.pipewire_fd}"
+            if self.pipewire_target:
+                src += f" target-object={self.pipewire_target}"
         elif self.device:
             src = f"v4l2src device={self.device}"
         else:
@@ -135,9 +138,16 @@ class BarcodeReaderGTK(Gtk.Box):
         pipeline.set_state(Gst.State.PLAYING)
 
 
-    def set_pipewire_fd(self, fd):
-        """Set PipeWire fd for portal-based camera access."""
-        log.info("Setting PipeWire fd to: %s", fd)
+    def set_pipewire_fd(self, fd, target=None):
+        """Set PipeWire fd for portal-based camera access.
+
+        Without a target the server picks by priority.session, which may
+        well rank an infrared camera first, i.e. one that reads no barcode.
+        """
+        log.info("Setting PipeWire fd to: %s (target: %s)", fd, target)
+        if self.pipewire_fd == fd and self.pipewire_target == target:
+            return
+
         # Whether to (re)start is decided by self._running, not by
         # inspecting the outgoing pipeline's GStreamer state: while
         # waiting for the portal to grant access, the interim pipeline
@@ -150,6 +160,7 @@ class BarcodeReaderGTK(Gtk.Box):
             self.pipeline.set_state(Gst.State.NULL)
             self.pipeline = None
         self.pipewire_fd = fd
+        self.pipewire_target = target
         self.device = None
         if should_restart:
             self.run()
