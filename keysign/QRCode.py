@@ -80,7 +80,7 @@ class QRImage(Gtk.DrawingArea):
     def on_gesture_released(self, gesture, n_press, x, y):
         button = gesture.get_current_button()
         if button == 1:
-            FullscreenQRImageWindow(data=self.data, transient_for=self.get_root())
+            FullscreenQRImageWindow(data=self.data)
 
 
     def do_draw(self, cr, widget_width, widget_height):
@@ -210,13 +210,20 @@ class FullscreenQRImageWindow(Gtk.Window):
         key_controller.connect('key-released', self.on_fullscreen_key_released)
         self.add_controller(key_controller)
 
-        # GTK4 on Wayland (e.g. GNOME Shell/mutter) does not reliably
-        # honour a fullscreen request made before the window has a
-        # surface: the window ends up shown as a plain, normally-sized
-        # window instead. Presenting first, then fullscreening once the
-        # window is realized, works on both X11 and Wayland.
-        self.present()
+        # Request fullscreen before presenting, not after. On GTK4's X11
+        # backend the fullscreen bit is part of the GdkToplevelLayout
+        # handed to gdk_toplevel_present(), and a fullscreen() issued
+        # after the first present() but before the window has been mapped
+        # and configured by the window manager is lost: the layout that
+        # reaches the server is the pre-fullscreen one, so the window
+        # opens at the QR code's natural size in the corner of the
+        # screen. Deferring to an idle callback or to the map handler is
+        # still too early. On the Wayland backend the order makes no
+        # difference, because fullscreen is negotiated through
+        # xdg_toplevel configure round-trips. The X11 path is what the
+        # Flatpak actually takes, via XWayland.
         self.fullscreen()
+        self.present()
 
     def on_fullscreen_gesture_released(self, gesture, n_press, x, y):
         button = gesture.get_current_button()
@@ -233,32 +240,28 @@ class FullscreenQRImageWindow(Gtk.Window):
             self.close()
 
 
+def build_window(data, application=None):
+    """Returns a window showing the data as a QR code
+
+    Clicking the QR code opens it in a fullscreen window, so this is
+    also the quickest way to exercise FullscreenQRImageWindow.
+    """
+    w = Gtk.Window(application=application)
+    w.set_default_size(100, 100)
+    w.set_child(QRImage(data))
+    return w
+
+
 def main(data):
-    w = Gtk.Window()
-    w.connect("delete-event", Gtk.main_quit)
-    w.set_default_size(100,100)
-    qr = QRImage(data)
-
-    global fullscreen
-    fullscreen = False
-
-    def on_released(widget, event):
-        global fullscreen
- 
-        if event.button == 1:
-            fullscreen = not fullscreen
-            if fullscreen:
-                w.fullscreen()
-            else:
-                w.unfullscreen()
-        
-    #qr.connect('button-release-event', on_released)
-    #qr.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.BUTTON_PRESS_MASK)
-    w.set_child(qr)
-    w.present()
     app = Gtk.Application()
-    app.connect('activate', lambda app: (w.set_application(app), w.present()))
-    app.run(None)
+
+    def on_activate(app):
+        build_window(data, application=app).present()
+
+    app.connect('activate', on_activate)
+    # Closing the last window quits the application, which is what the
+    # delete-event handler used to do for us.
+    return app.run(None)
 
 if __name__ == '__main__':
     import sys
