@@ -210,13 +210,20 @@ class FullscreenQRImageWindow(Gtk.Window):
         key_controller.connect('key-released', self.on_fullscreen_key_released)
         self.add_controller(key_controller)
 
-        # GTK4 on Wayland (e.g. GNOME Shell/mutter) does not reliably
-        # honour a fullscreen request made before the window has a
-        # surface: the window ends up shown as a plain, normally-sized
-        # window instead. Presenting first, then fullscreening once the
-        # window is realized, works on both X11 and Wayland.
-        self.present()
+        # Request fullscreen before presenting, not after. On GTK4's X11
+        # backend the fullscreen bit is part of the GdkToplevelLayout
+        # handed to gdk_toplevel_present(), and a fullscreen() issued
+        # after the first present() but before the window has been mapped
+        # and configured by the window manager is lost: the layout that
+        # reaches the server is the pre-fullscreen one, so the window
+        # opens at the QR code's natural size in the corner of the
+        # screen. Deferring to an idle callback or to the map handler is
+        # still too early. On the Wayland backend the order makes no
+        # difference, because fullscreen is negotiated through
+        # xdg_toplevel configure round-trips. The X11 path is what the
+        # Flatpak actually takes, via XWayland.
         self.fullscreen()
+        self.present()
 
     def on_fullscreen_gesture_released(self, gesture, n_press, x, y):
         button = gesture.get_current_button()
