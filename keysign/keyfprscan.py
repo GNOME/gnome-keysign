@@ -128,6 +128,8 @@ class KeyFprScanWidget(Gtk.Box):
             # Hidden until the portal says what there is to choose from.
             if self.camera_box:
                 self.camera_box.set_visible(False)
+            # The reader maps before us, so stop it grabbing a camera first.
+            self.reader.set_autoprobe(False)
             self.connect('map', self._on_map)
         else:
             # Legacy path: enumerate devices with Gst.DeviceMonitor
@@ -148,6 +150,8 @@ class KeyFprScanWidget(Gtk.Box):
             return
         window = self.get_root()
         if not self._request_camera_access(window):
+            log.info("Window is not focused, waiting with the Camera Portal "
+                     "request until it is")
             window.connect('notify::is-active', self._on_window_active)
 
     def _on_window_active(self, window, pspec):
@@ -267,6 +271,9 @@ class KeyFprScanWidget(Gtk.Box):
             self.camera_box.set_visible(True)
         if self.camera_selector:
             self.populate_cameras()
+        if not self.camera_devices:
+            # Nothing enumerable, so let the reader probe as it used to.
+            self.reader.set_autoprobe(True)
 
     def populate_cameras(self):
         monitor = Gst.DeviceMonitor.new()

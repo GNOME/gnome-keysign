@@ -20,6 +20,7 @@
 import logging
 import signal
 import sys
+import threading
 
 import gi
 gi.require_version('Gst', '1.0')
@@ -57,11 +58,13 @@ class BarcodeReaderGTK(Gtk.Box):
     }
 
 
-    def __init__(self, *args, device=None, pipewire_fd=None, **kwargs):
+    def __init__(self, *args, device=None, pipewire_fd=None, autoprobe=True,
+                 **kwargs):
         super(BarcodeReaderGTK, self).__init__(*args, **kwargs)
         self.device = device
         self.pipewire_fd = pipewire_fd
         self.pipewire_target = None
+        self.autoprobe = autoprobe
         # Whether the reader is supposed to be actively capturing, i.e.
         # whether the *next* set_device()/set_pipewire_fd() should restart
         # the pipeline. This is tracked explicitly rather than inferred
@@ -74,6 +77,7 @@ class BarcodeReaderGTK(Gtk.Box):
         self._sample_count = 0
         self._samples_at_last_check = 0
         self._stall_check_id = None
+        self._pipeline_generation = 0
         self.connect('unmap', self.on_unmap)
         self.connect('map', self.on_map)
         self.scaling_image = ScalingImage()
@@ -124,8 +128,11 @@ class BarcodeReaderGTK(Gtk.Box):
                 src += f" target-object={self.pipewire_target}"
         elif self.device:
             src = f"v4l2src device={self.device}"
-        else:
+        elif self.autoprobe:
             src = "autovideosrc"
+        else:
+            log.debug("No source to read from yet, waiting for one")
+            return
         pipeline_str = (
             f"{src} "
             " ! videoconvert "
@@ -145,12 +152,57 @@ class BarcodeReaderGTK(Gtk.Box):
         bus.connect('message', self.on_message)
         bus.add_signal_watch()
 
-        pipeline.set_state(Gst.State.PLAYING)
+        self._pipeline_generation += 1
+
+        # set_state opens the camera: 4.3s on a bad device, 14s once wedged.
+        threading.Thread(target=pipeline.set_state,
+                         args=(Gst.State.PLAYING,), daemon=True).start()
 
         if self.pipewire_fd is not None:
+            # Armed at start, not at PLAYING: a start that hangs is the case
+            # to catch.
             self._samples_at_last_check = self._sample_count
             self._stall_check_id = GLib.timeout_add_seconds(
                 STREAM_STALL_TIMEOUT, self._check_stream_progress)
+
+
+    def _replace_pipeline(self, restart):
+        """Retire the running pipeline, optionally starting a new one after.
+
+        Every caller runs on the main loop, and set_state(NULL) on a wedged
+        source was measured at 5.5s, hence the thread. The replacement waits
+        until the old one is gone so the two never hold one camera at once.
+        """
+        self._pipeline_generation += 1
+        generation = self._pipeline_generation
+        pipeline = getattr(self, 'pipeline', None)
+        self.pipeline = None
+
+        if pipeline is None:
+            if restart:
+                self.run()
+            return
+
+        def retire():
+            pipeline.set_state(Gst.State.NULL)
+            if restart:
+                GLib.idle_add(self._restart, generation)
+
+        threading.Thread(target=retire, daemon=True).start()
+
+
+    def _restart(self, generation):
+        # Anything that happened since queued its own restart.
+        if generation == self._pipeline_generation and self._running:
+            self.run()
+        return GLib.SOURCE_REMOVE
+
+
+    def set_autoprobe(self, autoprobe):
+        """Whether to hunt for a source when the portal has not given us one."""
+        self.autoprobe = autoprobe
+        if autoprobe and self._running and not getattr(self, 'pipeline', None):
+            self.run()
 
 
     def _stop_stall_watch(self):
@@ -187,40 +239,23 @@ class BarcodeReaderGTK(Gtk.Box):
         if self.pipewire_fd == fd and self.pipewire_target == target:
             return
 
-        # Whether to (re)start is decided by self._running, not by
-        # inspecting the outgoing pipeline's GStreamer state: while
-        # waiting for the portal to grant access, the interim pipeline
-        # (autovideosrc, since neither device nor fd is set yet)
-        # typically fails to reach PLAYING/PAUSED at all inside a
-        # sandbox, so "was it playing?" would wrongly stay false and
-        # we'd never restart once the fd actually arrives.
-        should_restart = self._running
-        if hasattr(self, 'pipeline') and self.pipeline:
-            self.pipeline.set_state(Gst.State.NULL)
-            self.pipeline = None
+        # _running, not the old pipeline's state: there may be none at all.
         self.pipewire_fd = fd
         self.pipewire_target = target
         self.device = None
-        if should_restart:
-            self.run()
+        self._replace_pipeline(self._running)
 
     def set_device(self, device):
         log.info("Setting device to: %s", device)
         if self.device == device:
             return
 
-        should_restart = self._running
-        if hasattr(self, 'pipeline') and self.pipeline:
-            self.pipeline.set_state(Gst.State.NULL)
-            self.pipeline = None
-
         self.device = device
         # run() prefers the fd, so a device needs it gone to take effect.
         self.pipewire_fd = None
         self.pipewire_target = None
 
-        if should_restart:
-            self.run()
+        self._replace_pipeline(self._running)
 
 
     def on_new_sample(self, appsink):
@@ -267,9 +302,7 @@ class BarcodeReaderGTK(Gtk.Box):
         e.g. when the tab of a notebook has changed'''
         self._running = False
         self._stop_stall_watch()
-        self.pipeline.set_state(Gst.State.PAUSED)
-        # Actually, we stop the thing for real
-        self.pipeline.set_state(Gst.State.NULL)
+        self._replace_pipeline(False)
 
 
     def do_barcode(self, barcode, message, image):
