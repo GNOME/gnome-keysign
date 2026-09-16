@@ -102,6 +102,7 @@ class KeyFprScanWidget(Gtk.Box):
         reader = BarcodeReaderGTK()
         reader.set_size_request(150,150)
         reader.connect('barcode', self.on_barcode)
+        reader.connect('stream-stalled', self._on_stream_stalled)
         self.scanner.append(reader)
         # We keep a reference here to not "lose" the object.
         # If we don't, Gtk crashes. With a segfault. Probably
@@ -110,6 +111,8 @@ class KeyFprScanWidget(Gtk.Box):
         self.reader = reader
 
         self.camera_selector = builder.get_object("comboboxtext1")
+        if self.camera_selector:
+            self.camera_selector.connect("changed", self.on_camera_changed)
         self.camera_box = builder.get_object("box40")
         self.camera_devices = {}
         
@@ -214,6 +217,19 @@ class KeyFprScanWidget(Gtk.Box):
                             node_name))
         return cameras
 
+    def _on_stream_stalled(self, reader):
+        """Open a device ourselves, the portal's stream having stayed blank.
+
+        The stream negotiates a format, delivers a frame or two and then
+        nothing, so take the camera the ordinary way instead.
+        """
+        if not self._using_portal:
+            return
+        log.warning("Camera Portal stream stalled, falling back to "
+                    "direct device access.")
+        self._using_portal = False
+        self._fallback_to_device_monitor()
+
     def _select_camera(self, value):
         if self._using_portal:
             self.reader.set_pipewire_fd(self._pipewire_fd, value)
@@ -309,7 +325,6 @@ class KeyFprScanWidget(Gtk.Box):
             self.camera_selector.append(item_id, label)
             
         if self.camera_devices:
-            self.camera_selector.connect("changed", self.on_camera_changed)
             if best_suitable_idx != -1:
                 default_index = best_suitable_idx
             elif best_unsuitable_idx != -1:

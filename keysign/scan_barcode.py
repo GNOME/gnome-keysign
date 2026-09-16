@@ -36,6 +36,9 @@ from gi.repository import Gdk
 
 log = logging.getLogger(__name__)
 
+# Silence this long means the stream is dead. Cameras here run at 10 fps.
+STREAM_STALL_TIMEOUT = 3
+
 
 
 class BarcodeReaderGTK(Gtk.Box):
@@ -47,7 +50,10 @@ class BarcodeReaderGTK(Gtk.Box):
                          GdkPixbuf.Pixbuf.__gtype__, # The pixbuf which caused
                                               # the above string to be decoded
                     ),
-                   )
+                   ),
+        # The PipeWire stream stopped delivering frames, see
+        # _check_stream_progress().
+        str('stream-stalled'): (GObject.SignalFlags.RUN_LAST, None, ()),
     }
 
 
@@ -65,6 +71,9 @@ class BarcodeReaderGTK(Gtk.Box):
         # granted access) would otherwise look indistinguishable from one
         # that was never meant to run at all.
         self._running = False
+        self._sample_count = 0
+        self._samples_at_last_check = 0
+        self._stall_check_id = None
         self.connect('unmap', self.on_unmap)
         self.connect('map', self.on_map)
         self.scaling_image = ScalingImage()
@@ -108,6 +117,7 @@ class BarcodeReaderGTK(Gtk.Box):
 
     def run(self):
         self._running = True
+        self._stop_stall_watch()
         if self.pipewire_fd is not None:
             src = f"pipewiresrc fd={self.pipewire_fd}"
             if self.pipewire_target:
@@ -136,6 +146,35 @@ class BarcodeReaderGTK(Gtk.Box):
         bus.add_signal_watch()
 
         pipeline.set_state(Gst.State.PLAYING)
+
+        if self.pipewire_fd is not None:
+            self._samples_at_last_check = self._sample_count
+            self._stall_check_id = GLib.timeout_add_seconds(
+                STREAM_STALL_TIMEOUT, self._check_stream_progress)
+
+
+    def _stop_stall_watch(self):
+        if self._stall_check_id:
+            GLib.source_remove(self._stall_check_id)
+            self._stall_check_id = None
+
+
+    def _check_stream_progress(self):
+        """Give up on a PipeWire stream that has gone quiet.
+
+        Seen on several hosts: a format is negotiated, a frame or two
+        arrives, then nothing at all, leaving a frozen picture and no error.
+        Opening the device ourselves may still work, so let the caller try.
+        """
+        if self._sample_count != self._samples_at_last_check:
+            self._samples_at_last_check = self._sample_count
+            return GLib.SOURCE_CONTINUE
+
+        log.warning("PipeWire stream delivered no frame in %d seconds, "
+                    "treating it as stalled", STREAM_STALL_TIMEOUT)
+        self._stall_check_id = None
+        self.emit('stream-stalled')
+        return GLib.SOURCE_REMOVE
 
 
     def set_pipewire_fd(self, fd, target=None):
@@ -176,6 +215,9 @@ class BarcodeReaderGTK(Gtk.Box):
             self.pipeline = None
 
         self.device = device
+        # run() prefers the fd, so a device needs it gone to take effect.
+        self.pipewire_fd = None
+        self.pipewire_target = None
 
         if should_restart:
             self.run()
@@ -185,6 +227,8 @@ class BarcodeReaderGTK(Gtk.Box):
         sample = appsink.emit("pull-sample")
         if not sample:
             return Gst.FlowReturn.ERROR
+
+        self._sample_count += 1
 
         buf = sample.get_buffer()
         caps = sample.get_caps()
@@ -222,6 +266,7 @@ class BarcodeReaderGTK(Gtk.Box):
         '''Hopefully called when this widget is hidden,
         e.g. when the tab of a notebook has changed'''
         self._running = False
+        self._stop_stall_watch()
         self.pipeline.set_state(Gst.State.PAUSED)
         # Actually, we stop the thing for real
         self.pipeline.set_state(Gst.State.NULL)
