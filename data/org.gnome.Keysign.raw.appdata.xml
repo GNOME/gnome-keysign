@@ -27,6 +27,17 @@ It follows best practises by sending the encrypted signatures to the UIDs of a k
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.9.7" date="2026-09-17" type="stable">
+      <description>
+        <p>
+         * Fix the camera permission dialog never appearing in Flatpak, which made camera access look instantly denied
+         * Let a camera be chosen when access goes through the Camera Portal, instead of always taking whichever one the system offers first
+         * Avoid an infrared camera being used for scanning while an ordinary one is available
+         * Fall back to opening the camera directly when the portal hands over a video stream that never delivers a frame
+         * Keep the window responsive while switching cameras and when a camera is slow to start or fails to start at all
+        </p>
+      </description>
+    </release>
     <release version="1.9.6" date="2026-09-15" type="stable">
       <description>
         <p>
