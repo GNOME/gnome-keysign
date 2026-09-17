@@ -1,7 +1,8 @@
-"""Tests for camera_portal.py — D-Bus interactions and pipewiresrc pipeline."""
+"""Tests for camera_portal.py: D-Bus interactions and pipewiresrc pipeline."""
 
 import os
 import logging
+import time
 import pytest
 from unittest import mock
 from unittest.mock import MagicMock, patch, call
@@ -220,23 +221,28 @@ class TestPipelineConstruction:
         assert 'pipewiresrc fd=42' in pipeline_str
 
 
+def _pump_until(predicate, timeout=5.0):
+    """Iterate the main context until predicate holds, or give up."""
+    context = GLib.MainContext.default()
+    deadline = time.monotonic() + timeout
+    while not predicate() and time.monotonic() < deadline:
+        context.iteration(False)
+        time.sleep(0.005)
+    return predicate()
+
+
 class TestRestartsEvenIfTheInterimPipelineNeverPlayed:
     """Regression test for a portal-specific restart bug.
 
-    Inside a Flatpak sandbox, BarcodeReaderGTK gets mapped (on_map() ->
-    run()) before the Camera Portal has answered -- the window has to be
-    visible for the user to see and answer the permission dialog. With
-    neither a device nor a pipewire_fd set yet, that interim pipeline is
-    "autovideosrc", which finds nothing inside the sandbox and gets stuck
-    at READY, never reaching PLAYING/PAUSED.
+    The reader is mapped before the portal answers, so any interim
+    pipeline never reaches PLAYING. Deciding whether to restart from that
+    pipeline's state therefore read as "was not running" and skipped it,
+    leaving the reader idle once access finally arrived. The decision now
+    comes from whether the reader is supposed to be running.
 
-    set_pipewire_fd() and set_device() used to decide whether to restart
-    by checking whether the *previous* pipeline was in the
-    PLAYING/PAUSED GStreamer state. Since the interim pipeline is stuck
-    at READY, that check concluded "wasn't running" and skipped
-    restarting -- so once the portal actually granted access, the reader
-    never started capturing. Restart is now decided by whether the
-    reader is *supposed* to be running, tracked explicitly.
+    Retiring a pipeline and starting its replacement happens off the main
+    loop, so the restart is awaited here rather than expected to have
+    happened by the time set_pipewire_fd() returns.
     """
 
     def _pipeline_stuck_at_ready(self):
@@ -253,6 +259,7 @@ class TestRestartsEvenIfTheInterimPipelineNeverPlayed:
 
         reader.set_pipewire_fd(42)
 
+        assert _pump_until(lambda: mock_run.called)
         mock_run.assert_called_once()
         assert reader.pipewire_fd == 42
         assert reader.device is None
@@ -265,6 +272,7 @@ class TestRestartsEvenIfTheInterimPipelineNeverPlayed:
 
         reader.set_device("/dev/video2")
 
+        assert _pump_until(lambda: mock_run.called)
         mock_run.assert_called_once()
 
     @patch.object(BarcodeReaderGTK, 'run')
@@ -277,6 +285,8 @@ class TestRestartsEvenIfTheInterimPipelineNeverPlayed:
         reader.set_pipewire_fd(42)
         reader.set_device("/dev/video2")
 
+        # Long enough for a restart to have shown up had one been queued.
+        assert not _pump_until(lambda: mock_run.called, timeout=0.5)
         mock_run.assert_not_called()
 
 
